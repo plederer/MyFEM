@@ -110,7 +110,6 @@ class Laplace():
             for i in range(lndofs):
                 for j in range(lndofs):
                     self.mat[dofs[i],dofs[j]] += A_T[i,j]
-            print(A_T)
             
     def CalcInverse(self):
         dofs = []
@@ -185,3 +184,29 @@ class Source():
             dofs = self.space.GetDofs(nr)
             for i in range(lndofs):
                     self.vec[dofs[i]] += F_T[i]
+
+def Draw(gfu, mesh, name):
+    xx=[]
+    yy=[]
+    zz=[]
+
+    sd = 0
+    for i, e in enumerate(mesh.els):
+        for v in e:
+            coords = mesh.pnts[v]
+            xx.append(coords[0])
+            yy.append(coords[1])
+            zz.append(gfu.vec[v])
+    
+    tri_idx = [(3 * i, 3 * i + 1, 3 * i + 2) for i in range(len(mesh.els))]
+
+
+    import matplotlib.pyplot as plt
+    import matplotlib.tri as tri
+
+    fig, axs = plt.subplots(subplot_kw={"projection": "3d"})
+    axs.view_init(elev=45.)
+
+    axs.plot_trisurf(xx,yy, zz, triangles=tri_idx, cmap="inferno", label=name)
+    
+    plt.show()
