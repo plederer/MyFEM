@@ -58,7 +58,7 @@ class GridFunction:
     def Evaluate(self, x, y, enr):
         trafo = MeshTrafo(enr, self.space.mesh)
 
-        xhat,yhat = trafo.mapinv(x,y)
+        xhat, yhat = trafo.mapinv(x,y)
         uu = self.space.fem.Evaluate(xhat,yhat)
         u = 0
         

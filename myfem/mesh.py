@@ -1,9 +1,12 @@
 import numpy as np 
+from ngsolve import IntegrationRule as ngsIntegrationRule
+from ngsolve import TRIG
 
 class IntegrationRule:
     def __init__(self, order = 1):
-        self.weights = [0.5/3, 0.5/3, 0.5/3]
-        self.points =  [(1,0), (0,1),(0,0)]
+        ir = ngsIntegrationRule(TRIG, order)
+        self.weights = ir.weights #[0.5/3, 0.5/3, 0.5/3]
+        self.points =  ir.points #[(1,0), (0,1),(0,0)]
         self.order = order
 
 class Mesh:
@@ -61,3 +64,22 @@ class MeshTrafo:
     def mapinv(self, x, y):
         X = np.array([x,y]) - self.b
         return self.Dinv @ X
+
+
+def Integrate(f, mesh, order = 1):
+    integral = 0
+    for nr, el in enumerate(mesh.els):
+        ir = IntegrationRule(order)
+        trafo = MeshTrafo(nr, mesh)
+
+        for i, ip in enumerate(ir.points):
+            omega = ir.weights[i]
+            
+            xhat = ip[0]
+            yhat = ip[1]
+            x,y = trafo.map(xhat,yhat)
+            
+            integral += trafo.J * omega * f(x, y, nr)
+    
+    return integral
+
